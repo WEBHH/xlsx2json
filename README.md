@@ -6,8 +6,6 @@
 * 本项目是基于nodejs的，所以需要先安装nodejs环境。
 * 执行命令
 ```bash
-# Clone this repository
-git clone https://github.com/koalaylj/xlsx2json.git
 # Go into the repository
 cd xlsx2json
 # Install dependencies
@@ -19,9 +17,10 @@ npm install
 {
     "xlsx": {
         /**
-         * 表头所在的行，第一行可以是注释，第二行是表头
+         * 表头所在的行
+         * TIPS: 第一行字段中文描述，第二行字段类型，第三行字段名称(默认导出array，若以#开头则导出hash格式);
          */
-        "head": 2,
+        "head": 3,
 
         /**
          * xlsx文件所在的目录
@@ -57,10 +56,8 @@ npm install
     * 执行`node index.js -h` 查看使用帮助。
     * 命令行传参方式使用：执行 node `index.js --help` 查看。
 
-#### 示例1 基本功能(参考./excel/basic.xlsx)   
-![excel](./docs/image/excel-data.png)
-
-输出如下(因为设置了`#id`列，输出`JsonHash`格式，如果无`#id`列则输出数组格式)：
+#### 示例1 基本功能
+输出如下(因为设置了`#`列，输出`JsonHash`格式，如果无`#`列则输出数组格式)：
 
 ```json
 {
@@ -99,7 +96,7 @@ npm install
 }
 ```
 
-如果将第一列的`id#id`换成`id#string`则会输出`JsonArray`格式：
+如果将第一列的`#id`换成`id`则会输出`JsonArray`格式：
 
 ```json
 [
@@ -142,57 +139,59 @@ npm install
 
 ![excel](./docs/image/master-slave.png)
 
-如果一个表格某一列是`#[]` 或者`#{}`类型的时候，防止表格过于复杂，可将主表拆分。如上图所示。
+如果一个表格某一列是`object[]` 或者`object{}`类型的时候，防止表格过于复杂，可将主表拆分。如上图所示。
 
-比如上图中的 `表1`中 `boss#{}`和 `reward#[]`列比较复杂，可以将之拆为三个表：`表2、3、4`，将`表1`中的 `boss#{}`拆成`表3`，`表1`中的`reward#[]`拆成表4。`表2`为主表，`表3、4`为从表。
+比如上图中的 `表1`中 `boss object{}`和 `reward object[]`列比较复杂，可以将之拆为三个表：`表1、2、3`，将`表1`中的 `boss object{}`拆成`表2`，`表1`中的`reward object[]`拆成表3。`表1`为主表，`表2、3`为从表。
 
 
 
 ### 支持以下数据类型
 
-* `number` 数字类型。
+* `int` int类型。
+* `float` float类型。
+* `long` long类型。
 * `boolean`  布尔。
 * `string` 字符串。
 * `date` 日期类型。
 * `object `对象，同JS对象一致。
 * `array`  数组，同JS数组一致。
-* `id` 主键类型(当表中有id类型时，json会以hash格式输出，否则以array格式输出)。
-* `id[]` 主键数组，只存在于从表中。
-
+* `int[]` int数组类型。
+* `float[]` float数组类型。
+* `string[]` 字符串数组。
 
 
 ### 表头规则
 
-* 基本数据类型(string,number,bool)时候，一般不需要设置会自动判断，但是也可以明确声明数据类型。
-* 字符串类型：命名形式 `列名#string` 。
-* 数字类型：命名形式 `列名#number` 。
-* 日期类型：`列名#date` 。日期格式要符合标准日期格式。比如`YYYY/M/D H:m:s` or `YYYY/M/D` 等等。
-* 布尔类型：命名形式 `列名#bool` 。
-* 数组：命名形式  `列名#[]`。
-* 对象：命名形式 `列名#{}`。
-* 主键：命名形式`列名#id` ,表中只能有一列。
-* 主键数组：命名形式`列名#id[]`，表中只能有一列，只存在于从表中。
+* 明确声明数据类型。
+* 字符串类型：命名形式 `string` 。
+* 日期类型：`date` 。日期格式要符合标准日期格式。比如`YYYY/M/D H:m:s` or `YYYY/M/D` 等等。
+* 布尔类型：命名形式 `bool` 。
+* 数组：命名形式  `[]`。
+* 对象：命名形式 `{}`。
 * 列名字以`!`开头则不导出此列。
+* slave表中必须要有`master`列。
 
 
 
 ### sheet规则
 
 - sheet名字以`！`开头则不导出此表。
+- 主表的名字 `主表名字#master`。
 - 从表的名字 `从表名字@主表名字`，主表必须在从表的前面。
 
 
 
 ### 主从表相关规则(master/slave)
 
-- master表必须是hash类型，即必须有`#id`列。
-- slave表名字 `slave名字@master名字`，master表的顺序必须在slave表的前面。
-- slave表中必须要有`#id`列或者`#id[]`列。
-- 如果将master表中的`#{}列`拆分，则slave表中应为`#id`，值为master表的id。
-- 如果将master表中的`#[]列`拆分，则slave表中应为`#id[]`，值为master表的id。
+- master表必须是hash类型，即必须有以`#`开头列。
+- slave表名字 `从表名字@主表名字`，master表的顺序必须在slave表的前面。
+- slave表中必须要有`master`列。
+- 如果将master表中的`{}列`拆分，则slave表中应有以`#master`开头列，值为主表中的唯一key。
+- 如果将master表中的`[]列`拆分，则slave表中应有以`master`开头列，值为主表中的唯一key。
 - 具体请看示例`./excel/master-salve.xlsx`。
 
-
+### 表备注规则
+* 必须在表内容列之后不超过内容行的所有区域；
 
 ### 注意事项
 
@@ -201,20 +200,3 @@ npm install
 * 对象写法同JavaScript中对象写法一致(不会JS的同学可理解为JSON的key不需要双引号其他和JSON一样)。
 * 数组写法同JavaScript中数组写法一致(不会JS的同学可理解为JSON的key不需要双引号其他和JSON一样)。
 * 如果导出的JSON文件尾行出现value都是null的数据，可能是因为excel中数据没删除干净，看控制台打印的行数据条目数和实际符不符合可判定。
-
-
-### TODO
-- [ ] 将主分支的代码合并到npm分支。
-
-### 分支
-* `master`为主分支,此分支用于发布版本，包含当前稳定代码，不要往主分支直接提交代码。
-* `dev`为开发分支,新功能bug修复等提交到此分支，待稳定后合并到`master`分支。
-* 如需当做npm模块引用请切换到`npm`分支(尚有功能未合并，暂时不可用)。
-
-
-### 补充
-* 可在windows/mac/linux下运行。
-* 项目地址 [xlsx2json master](https://github.com/koalaylj/xlsx2json)
-* 如有问题可以到QQ群内讨论：223460081
-* 招募协作开发者，有时间帮助一起维护下这个项目，可以发issue或者到qq群里把你github邮箱告诉我。
-
