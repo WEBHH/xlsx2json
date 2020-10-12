@@ -191,7 +191,8 @@ npm install
 - 具体请看示例`./excel/master-salve.xlsx`。
 
 ### 表备注规则
-* 必须在表内容列之后不超过内容行的所有区域；
+* 可在表内容列之后不超过内容行的任何区域备注，如下红框区域：
+![excel](./docs/image/remarks.jpg)
 
 ### 注意事项
 
