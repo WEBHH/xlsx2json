@@ -50,7 +50,7 @@ npm install
     }
 }
 ```
-* 执行`export.sh|export.bat`即可将`./excel/*.xlsx` 文件导成json并存放到 `./json` 下。json名字以excel的sheet名字命名。
+* 执行`./export.sh|export.bat`即可将`./excel/*.xlsx` 文件导成json并存放到 `./json` 下。json名字以excel的sheet名字命名。
 
 * 补充(一般用不上)：
     * 执行`node index.js -h` 查看使用帮助。
@@ -191,7 +191,8 @@ npm install
 - 具体请看示例`./excel/master-salve.xlsx`。
 
 ### 表备注规则
-* 必须在表内容列之后不超过内容行的所有区域；
+* 可在表内容列之后不超过内容行的任何区域备注，如下红框区域：
+![excel](./docs/image/remarks.jpg)
 
 ### 注意事项
 
