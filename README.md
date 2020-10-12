@@ -50,7 +50,7 @@ npm install
     }
 }
 ```
-* 执行`export.sh|export.bat`即可将`./excel/*.xlsx` 文件导成json并存放到 `./json` 下。json名字以excel的sheet名字命名。
+* 执行`./export.sh|export.bat`即可将`./excel/*.xlsx` 文件导成json并存放到 `./json` 下。json名字以excel的sheet名字命名。
 
 * 补充(一般用不上)：
     * 执行`node index.js -h` 查看使用帮助。
