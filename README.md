@@ -1,4 +1,4 @@
-### xlsx2json ([English Document](./docs/doc_en.md))
+### xlsx2json
 > 让excel支持复杂的json格式, 将xlsx文件转成json。
 
 ### 使用说明
